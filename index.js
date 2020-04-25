@@ -93,11 +93,10 @@ function sendItems(items) {
 }
 
 function extractOculusLink(link) {
-  console.log("extracted link - " + link)
   let regex = /\<a\s+(?:[^>]*?\s+)?href=(["'])(https:\/\/www.oculus.com.*?)\1/g
   var match = regex.exec(link);
   if (match != null) {
-    console.log(match[2])
+    console.log("link - " - match[2])
     return match[2]
   } else {
     return null

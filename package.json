@@ -11,6 +11,8 @@
   "license": "ISC",
   "dependencies": {
     "node-cron": "^2.0.3",
-    "node-telegram-bot-api": "^0.40.0"
+    "node-telegram-bot-api": "^0.40.0",
+    "pg": "^8.0.3",
+    "rss-parser": "^3.7.6"
   }
 }

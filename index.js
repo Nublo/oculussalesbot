@@ -96,8 +96,8 @@ function extractOculusLink(link) {
   console.log("extracted link - " + link)
   let regex = /\<a\s+(?:[^>]*?\s+)?href=(["'])(https:\/\/www.oculus.com.*?)\1/g
   var match = regex.exec(link);
-  console.log("2" + match[2])
   if (match != null)
+    console.log(match[2])
     return match[2]
   else
     return null

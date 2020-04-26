@@ -21,6 +21,10 @@ if (isProduction) {
   bot = new TelegramBot(process.env.BOT_ID, {polling: true});
 }
 
+bot.onText(/\/chatId/, (msg) => {
+  bot.sendMessage(msg.chat.id, JSON.stringify(msg))
+});
+
 cron.schedule('0 * * * *', () => {
   updateFeed()
 })
@@ -40,13 +44,13 @@ function updateFeed() {
         logErrorAndNotify("Didn't find last_update_id in a table")
       }
     })
-    .catch(e => logErrorAndNotify(e.stack))
+    .catch(e => logErrorAndNotify("Error while getting lastId " + e.stack))
 }
 
 function sendUpdates(last_update_id) {
   parser.parseURL('https://www.reddit.com/r/OculusQuestStore/.rss', function(err, feed) {
     if (err) {
-      logErrorAndNotify(err)
+      logErrorAndNotify("parse error - " + err)
       return
     }
 
@@ -75,7 +79,7 @@ function updateLastItemAndSendMessages(item_id, items) {
     .then(res => {
       sendItems(items)
     })
-    .catch(e => logErrorAndNotify(e.stack))
+    .catch(e => logErrorAndNotify("Update LastItem error" - e.stack))
 }
 
 function sendItems(items) {

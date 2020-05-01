@@ -86,7 +86,7 @@ function sendItems(items) {
   for (var i = items.length-1; i >= 0; i--) {
     var title = items[i].title
     var link = extractOculusLink(items[i].content)
-    if (link != null) {
+    if (isProperPost(title, link)) {
       bot.sendMessage(
         process.env.CHANNEL_ID,
         prepareLink(title, link),
@@ -100,11 +100,19 @@ function extractOculusLink(link) {
   let regex = /\<a\s+(?:[^>]*?\s+)?href=(["'])(https:\/\/www.oculus.com.*?)\1/g
   var match = regex.exec(link);
   if (match != null) {
-    console.log("link - " - match[2])
     return match[2]
   } else {
     return null
   }
+}
+
+function isProperPost(title, link) {
+  if (link == null) {
+    return false;
+  }
+  console.log("title - " + title)
+  console.log("link - " + link)
+  return title.toLowerCase().includes("[sale]")
 }
 
 function prepareLink(title, link) {

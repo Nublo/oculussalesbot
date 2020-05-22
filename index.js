@@ -48,7 +48,7 @@ function updateFeed() {
 }
 
 function sendUpdates(last_update_id) {
-  parser.parseURL('https://www.reddit.com/r/OculusQuestStore/.rss', function(err, feed) {
+  parser.parseURL('https://www.reddit.com/r/OculusQuestStore/new.rss', function(err, feed) {
     if (err) {
       logErrorAndNotify("parse error - " + err)
       return

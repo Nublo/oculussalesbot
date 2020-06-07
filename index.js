@@ -84,6 +84,7 @@ function updateLastItemAndSendMessages(item_id, items) {
 
 function sendItems(items) {
   for (var i = items.length-1; i >= 0; i--) {
+    var item = items[i]
     var title = items[i].title
     var link = extractOculusLink(items[i].content)
     if (isProperPost(title, link)) {
@@ -92,8 +93,24 @@ function sendItems(items) {
         prepareLink(title, link),
         {"parse_mode": "HTML"}
       )
+      .then(message => {
+        saveSale(item.id, title, link, message.message_id)
+      })
     }
   }
+}
+
+function saveSale(item_id, title, link, message_id) {
+  const query = {
+    text: 'INSERT INTO sales (id, title, link, sale_end_date, message_id) VALUES ($1, $2, $3, $4, $5)',
+    values: [item_id, title, link, null, message_id],
+  }
+  pool
+    .query(query)
+    .then(res => {
+      sendItems(items)
+    })
+    .catch(e => logErrorAndNotify("saveSale error {" + item_id + "," + link + "," + message_id + "}, " - e.stack))
 }
 
 function extractOculusLink(link) {

@@ -79,7 +79,7 @@ function updateLastItemAndSendMessages(item_id, items) {
     .then(res => {
       sendItems(items)
     })
-    .catch(e => logErrorAndNotify("Update LastItem error" - e.stack))
+    .catch(e => logErrorAndNotify("Update LastItem error - " + e.stack))
 }
 
 function sendItems(items) {
@@ -110,7 +110,7 @@ function saveSale(item_id, title, link, message_id) {
     .then(res => {
       sendItems(items)
     })
-    .catch(e => logErrorAndNotify("saveSale error {" + item_id + "," + link + "," + message_id + "}, " - e.stack))
+    .catch(e => logErrorAndNotify("saveSale:{" + item_id + "," + link + "," + message_id + "}, " + e.stack))
 }
 
 function extractOculusLink(link) {

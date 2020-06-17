@@ -108,7 +108,7 @@ function saveSale(item_id, title, link, message_id) {
   pool
     .query(query)
     .then(res => {
-      sendItems(items)
+      // Do nothing here
     })
     .catch(e => logErrorAndNotify("saveSale:{" + item_id + "," + link + "," + message_id + "}, " + e.stack))
 }

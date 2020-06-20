@@ -83,10 +83,10 @@ function updateLastItemAndSendMessages(item_id, items) {
 }
 
 function sendItems(items) {
-  for (var i = items.length-1; i >= 0; i--) {
-    var item = items[i]
-    var title = items[i].title
-    var link = extractOculusLink(items[i].content)
+  let rotatedItems = items.rotate(items.length);
+  rotatedItems.forEach(item => {
+    var title = item.title
+    var link = extractOculusLink(item.content)
     if (isProperPost(title, link)) {
       bot.sendMessage(
         process.env.CHANNEL_ID,
@@ -97,7 +97,11 @@ function sendItems(items) {
         saveSale(item.id, title, link, message.message_id)
       })
     }
-  }
+  })
+}
+
+Array.prototype.rotate = function(n) {
+    return this.slice(n, this.length).concat(this.slice(0, n));
 }
 
 function saveSale(item_id, title, link, message_id) {

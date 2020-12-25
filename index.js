@@ -5,6 +5,7 @@ const { Pool } = require('pg')
 const pool = new Pool({ connectionString: process.env.DATABASE_URL })
 let Parser = require('rss-parser');
 let parser = new Parser();
+let enableSend = true;
 
 const TelegramBot = require('node-telegram-bot-api');
 const isProduction = typeof process.env.PORT !== 'undefined'
@@ -25,8 +26,25 @@ bot.onText(/\/chatId/, (msg) => {
   bot.sendMessage(msg.chat.id, JSON.stringify(msg))
 });
 
+bot.onText(/\/swap/, (msg) => {
+  if (msg.chat.id == process.env.CHAT_ID) {
+    if (enableSend) {
+      bot.sendMessage(msg.chat.id, "Bot now is stopped")
+    } else {
+      bot.sendMessage(msg.chat.id, "Bot now is running")
+    }
+    enableSend = !enableSend;
+  } else {
+    bot.sendMessage(msg.chat.id, "You don't have rights to manage bot")
+  }
+});
+
 cron.schedule('0 * * * *', () => {
-  updateFeed()
+  if (enableSend) {
+    updateFeed()
+  } else {
+    console.log("Bot has been stopped");
+  }
 })
 
 updateFeed()
@@ -56,15 +74,21 @@ function sendUpdates(last_update_id) {
 
     var index = feed.items.findIndex((item) => item.id == last_update_id)
 
-    if (index > 0) {
-      updateLastItemAndSendMessages(
-        feed.items[0].id,
-        feed.items.slice(0, index)
-      )
-    } else if (index == 0) {
+    if (index == 0) {
       console.log("No updates for now")
     } else {
-      logErrorAndNotify("Didn't find item with id - " + last_update_id)
+      if (index < 0) {
+        console.log("Didn't find item with id - " + last_update_id);
+        updateLastItemAndSendMessages(
+          feed.items[0].id,
+          feed.items
+        );
+      } else {
+        updateLastItemAndSendMessages(
+          feed.items[0].id,
+          feed.items.slice(0, index)
+        );
+      }
     }
   })
 }
@@ -84,7 +108,14 @@ function updateLastItemAndSendMessages(item_id, items) {
 
 function sendItems(items) {
   let rotatedItems = items.rotate(items.length);
+  let timeoutMs = 0;
   rotatedItems.forEach(item => {
+    setTimeout(sendItem, timeoutMs, item);
+    timeoutMs = timeoutMs + 3000;
+  })
+}
+
+function sendItem(item) {
     var title = item.title
     var link = extractOculusLink(item.content)
     if (isProperPost(title, link)) {
@@ -97,7 +128,6 @@ function sendItems(items) {
         saveSale(item.id, title, link, message.message_id)
       })
     }
-  })
 }
 
 Array.prototype.rotate = function(n) {

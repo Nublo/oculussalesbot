@@ -2,7 +2,12 @@
 const cron = require('node-cron')
 
 const { Pool } = require('pg')
-const pool = new Pool({ connectionString: process.env.DATABASE_URL })
+const pool = new Pool({ 
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
+})
 let Parser = require('rss-parser');
 let parser = new Parser();
 let enableSend = true;

@@ -36,9 +36,11 @@ bot.command('swap', async (ctx) => {
 
 exports.echoBot = functions.https.onRequest(async (request, response) => {
   functions.logger.log('Incoming message', request.body)
-  return await bot.handleUpdate(request.body, response).then((rv) => {
-  	return !rv && response.sendStatus(200);
-  })
+  try {
+    await bot.handleUpdate(request.body)
+  } finally {
+    response.status(200).end()
+  }
 })
 
 exports.cronJob = functions.pubsub.schedule('0 * * * *').onRun(async (context) => {

@@ -96,9 +96,10 @@ async function updateLastItemAndSendMessages(item_id, items, last_update_id) {
   	last_update_id: item_id,
   	date: date
   }
-  const writeResult = await admin.firestore().collection('last_update').doc(item_id).add(data);
+  const writeResult = await admin.firestore().collection('last_update').doc(item_id).set(data);
 
   const clearResult = await admin.firestore().collection('last_update').doc(last_update_id).delete();
+  
   sendItems(items);
 }
 

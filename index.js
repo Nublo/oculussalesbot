@@ -22,7 +22,8 @@ if (isProduction) {
     }
   }
   bot = new TelegramBot(process.env.BOT_ID, options);
-  bot.setWebHook(process.env.SERVICE_URL + ':' + process.env.PORT + '/bot' + process.env.BOT_ID);
+  // Disable webhook set to avoid mixing with another bot
+  // bot.setWebHook(process.env.SERVICE_URL + ':' + process.env.PORT + '/bot' + process.env.BOT_ID);
 } else {
   bot = new TelegramBot(process.env.BOT_ID, {polling: true});
 }

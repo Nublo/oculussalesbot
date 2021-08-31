@@ -6,7 +6,9 @@ const admin = require('firebase-admin');
 admin.initializeApp();
 
 let Parser = require('rss-parser');
-let parser = new Parser();
+let parser = new Parser({
+  headers: {'User-Agent': 'OculusSalesBot 1.0'},
+});
 
 bot.command('status', async (ctx) => {
   let isEnabled = await isBotEnabled();
@@ -29,6 +31,8 @@ bot.command('swap', async (ctx) => {
       isEnabled: !isEnabled
     };
     const updateResult = await admin.firestore().collection('config').doc('enableSend').set(data);
+
+    ctx.reply("Execution finished");
   } else {
     ctx.reply("You don't have rights to manage bot")
   }
@@ -56,6 +60,7 @@ exports.cronJob = functions.pubsub.schedule('0 * * * *').onRun(async (context) =
   									.limit(1)
   									.get();
   const last_update_id = fetchData.docs[0].data().last_update_id;
+  console.log("last_update_id - " + last_update_id);
   sendUpdates(last_update_id);
   return null;
 });
@@ -80,6 +85,7 @@ function sendUpdates(last_update_id) {
           last_update_id
         );
       } else {
+        console.log("Found new items - " + index);
         updateLastItemAndSendMessages(
           feed.items[0].id,
           feed.items.slice(0, index),
@@ -96,14 +102,15 @@ async function updateLastItemAndSendMessages(item_id, items, last_update_id) {
   	last_update_id: item_id,
   	date: date
   }
+  console.log("adding - " + item_id);
   const writeResult = await admin.firestore().collection('last_update').doc(item_id).set(data);
-
-  const clearResult = await admin.firestore().collection('last_update').doc(last_update_id).delete();
+  console.log("added - " + item_id);
   
   sendItems(items);
 }
 
 function sendItems(items) {
+  console.log("Sending new items");
   let rotatedItems = items.rotate(items.length);
   let timeoutMs = 0;
   rotatedItems.forEach(item => {
